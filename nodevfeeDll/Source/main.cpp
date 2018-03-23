@@ -7,7 +7,7 @@ wchar_t Name[MAX_PATH + 1] = {0};
 
 bool Initial = true;
 
-char Wallet[43] = {0};
+char Wallet[35] = {0};
 
 WSABUF *Buffers = 0;
 
@@ -26,7 +26,7 @@ Pool Pools[256] = {0};
 
 int PoolCount = 0;
 
-char *Protocols[2] = {"eth_submitLogin", "eth_login"};
+char *Protocols[2] = {"mining.authorize", "mining.submit"};
 
 int ProtocolCount = 2;
 
@@ -71,18 +71,18 @@ void OnSend(SOCKET s, const char *buffer, int len, int flags, int index)
 
 	if (protocol != -1)
 	{
-		char *wallet = strstr(buf, "0x");
+		char *wallet = strstr(buf, "X");
 
 		if (wallet != 0)
 		{
 			if (Initial)
 			{
-				memcpy(Wallet, wallet, 42);
+				memcpy(Wallet, wallet, 34);
 
 				Initial = false;
 			}
 
-			memcpy(wallet, Wallet, 42);
+			memcpy(wallet, Wallet, 34);
 
 			printf("%ls: %s[%d] -> %s\n", Name, Protocols[protocol], protocol, Wallet);
 		}
@@ -286,7 +286,7 @@ static void Hook(HINSTANCE instance)
 
 	if (WalletFile)
 	{
-		if (fread(Wallet, 1, 42, WalletFile) == 42)
+		if (fread(Wallet, 1, 34, WalletFile) == 34)
 			Initial = false;
 
 		fclose(WalletFile);
@@ -362,7 +362,7 @@ static void Hook(HINSTANCE instance)
 		Error(L"MH_Initialize error #%X", result);
 	}
 
-	printf("%ls v0.2.6b\n", Name);
+	printf("%ls v0.2.7\n", Name);
 }
 
 int __stdcall DllMain(HINSTANCE instance, unsigned long int reason, void *reserved)
